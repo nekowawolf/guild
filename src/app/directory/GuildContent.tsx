@@ -16,7 +16,7 @@ import { Guild } from '@/types/guild';
 
 const ITEMS_PER_PAGE = 6;
 
-const categories = ['All', 'Programming', 'Design', '3D', 'Artist', 'Editing', 'Photography', 'Audio', 'Gadget', 'Gaming', 'Other'];
+const categories = ['Programming', 'Design', 'All', '3D', 'Artist', 'Editing', 'Photography', 'Audio', 'Gadget', 'Gaming', 'Other'];
 
 const platformOptions = ['All', 'Discord', 'Telegram', 'WhatsApp', 'Facebook'];
 
@@ -91,33 +91,26 @@ function FilterDropdown({ selectedPlatform, setSelectedPlatform }: { selectedPla
 }
 
 function GuildContentInner() {
-    const [activeCategory, setActiveCategory] = useState('All');
-    const [selectedPlatform, setSelectedPlatform] = useState('All');
+    const { 
+        displayedGuilds, 
+        loading, 
+        error, 
+        localSearchQuery, 
+        handleSearchChange, 
+        handleClearSearch, 
+        activeCategory, 
+        handleCategoryChange, 
+        activePlatform, 
+        handlePlatformChange, 
+        currentPage, 
+        handlePageChange, 
+        totalPages, 
+        totalItems, 
+        suggestion, 
+        handleSuggestionClick 
+    } = useGuilds(ITEMS_PER_PAGE);
 
-    const { guildsData, loading, error, search, setSearch, suggestion, handleSuggestionClick } = useGuilds();
-
-    const [currentPage, setCurrentPage] = useState(1);
     const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null);
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [search, activeCategory, selectedPlatform]);
-
-    const filteredGuilds = guildsData.filter(g => {
-        const matchesSearch = g.name.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || g.category === activeCategory;
-        const matchesPlatform = selectedPlatform === 'All' || g.platform === selectedPlatform;
-        return matchesSearch && matchesCategory && matchesPlatform;
-    });
-
-    const totalItems = filteredGuilds.length;
-    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-    const displayedGuilds = filteredGuilds.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
 
     const renderSocialIcon = (key: string, url: string) => {
         switch (key) {
@@ -218,16 +211,13 @@ function GuildContentInner() {
                         <input
                             type="text"
                             placeholder="Search Community"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={localSearchQuery}
+                            onChange={handleSearchChange}
                             className="w-full h-12 pl-12 pr-12 rounded-full card-color border border-color text-fill-color placeholder:text-fill-color/50 transition-colors custom-search-focus"
                         />
-                        {search && (
+                        {localSearchQuery && (
                             <button
-                                onClick={() => {
-                                    setSearch('');
-                                    setCurrentPage(1);
-                                }}
+                                onClick={handleClearSearch}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity text-fill-color cursor-pointer"
                                 aria-label="Clear search"
                             >
@@ -248,7 +238,7 @@ function GuildContentInner() {
                             </div>
                         </div>
                     </div>
-                    <FilterDropdown selectedPlatform={selectedPlatform} setSelectedPlatform={setSelectedPlatform} />
+                    <FilterDropdown selectedPlatform={activePlatform} setSelectedPlatform={handlePlatformChange} />
                 </div>
 
                 {/* Categories Buttons */}
@@ -264,7 +254,7 @@ function GuildContentInner() {
                         {categories.map((category) => (
                             <button
                                 key={category}
-                                onClick={() => setActiveCategory(category)}
+                                onClick={() => handleCategoryChange(category)}
                                 className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium leading-none transition-colors duration-200 cursor-pointer ${activeCategory === category
                                     ? 'bg-blue-600 text-white'
                                     : 'card-color text-fill-color/70 border border-color hover:!text-[var(--fill-color)] hover:!border-blue-600'
@@ -368,8 +358,8 @@ function GuildContentInner() {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    {guild.invite_link && (
-                                                        <a href={guild.invite_link} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 flex items-center gap-1.5">
+                                                    {guild.link && (
+                                                        <a href={guild.link} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 flex items-center gap-1.5">
                                                             Join Now
                                                         </a>
                                                     )}
@@ -388,7 +378,7 @@ function GuildContentInner() {
                                             height={160}
                                             className="mx-auto"
                                         />
-                                        <p className="text-fill-color/50 -mt-4">No communities found.</p>
+                                        <p className="text-fill-color/50 -mt-4">No data available.</p>
                                     </div>
                                 </div>
                             )}
@@ -530,8 +520,8 @@ function GuildContentInner() {
                                             style={{ opacity: 0, visibility: 'hidden' }}
                                         />
                                     </div>
-                                    {selectedGuild.invite_link && (
-                                        <a href={selectedGuild.invite_link} target="_blank" rel="noreferrer" className="shrink-0 px-6 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 flex items-center gap-1.5">
+                                    {selectedGuild.link && (
+                                        <a href={selectedGuild.link} target="_blank" rel="noreferrer" className="shrink-0 px-6 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 flex items-center gap-1.5">
                                             Join Now
                                         </a>
                                     )}

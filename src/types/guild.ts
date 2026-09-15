@@ -6,7 +6,7 @@ export interface Guild {
     website?: string;
     platform: string;
     category: string;
-    invite_link?: string;
+    link?: string;
     socials: {
         twitter?: string;
         instagram?: string;

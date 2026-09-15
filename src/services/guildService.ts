@@ -1,9 +1,30 @@
 import { Guild } from '@/types/guild';
-import guildsData from '@/data/guilds.json';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const fetchGuilds = async (forceShuffle: boolean = false): Promise<Guild[]> => {
     try {
-        let resultData: Guild[] = guildsData as Guild[];
+        const fullUrl = `${API_BASE_URL}/guild`;
+        console.log('Fetching Guilds data from:', fullUrl);
+
+        const response = await fetch(fullUrl);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status} ${response.statusText} (URL: ${fullUrl})`);
+        }
+        const data = await response.json();
+
+        let resultData: Guild[] = [];
+
+        if (!Array.isArray(data)) {
+            if (data && Array.isArray(data.data)) {
+                resultData = data.data;
+            } else {
+                console.error('API did not return an array:', data);
+                return [];
+            }
+        } else {
+            resultData = data;
+        }
 
         if (typeof sessionStorage !== 'undefined') {
             const cachedOrderStr = sessionStorage.getItem('guildsOrder');
@@ -33,5 +54,15 @@ export const fetchGuilds = async (forceShuffle: boolean = false): Promise<Guild[
     } catch (error) {
         console.error('Error fetching guilds:', error);
         throw error;
+    }
+};
+
+export const fetchGuildById = async (id: string): Promise<Guild | null> => {
+    try {
+        const items = await fetchGuilds(false);
+        return items.find((t) => t._id.toString() === id) || null;
+    } catch (error) {
+        console.error('Error fetching Guild item by ID:', error);
+        return null;
     }
 };
