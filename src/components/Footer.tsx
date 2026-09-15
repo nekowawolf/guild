@@ -1,0 +1,172 @@
+'use client';
+
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
+import { FaXTwitter, FaInstagram, FaThreads } from "react-icons/fa6";
+
+export default function Footer() {
+    const textContainerRef = useRef<HTMLDivElement>(null);
+    const mouseX = useMotionValue(-9999);
+    const mouseY = useMotionValue(-9999);
+    const smoothX = useSpring(mouseX, { stiffness: 300, damping: 30, mass: 0.8 });
+    const smoothY = useSpring(mouseY, { stiffness: 300, damping: 30, mass: 0.8 });
+    const [isHovering, setIsHovering] = useState(false);
+
+    useEffect(() => {
+        const handleGlobalMouseMove = (e: MouseEvent) => {
+            if (!textContainerRef.current) return;
+            const rect = textContainerRef.current.getBoundingClientRect();
+            const x = e.clientX;
+            const y = e.clientY;
+            const isInside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+            if (isInside) {
+                setIsHovering(true);
+                mouseX.set(x - rect.left);
+                mouseY.set(y - rect.top);
+            } else {
+                setIsHovering(false);
+                mouseX.set(-9999);
+                mouseY.set(-9999);
+            }
+        };
+
+        const handleMouseLeaveWindow = () => {
+            setIsHovering(false);
+            mouseX.set(-9999);
+            mouseY.set(-9999);
+        };
+
+        window.addEventListener("mousemove", handleGlobalMouseMove, true);
+        document.addEventListener("mouseleave", handleMouseLeaveWindow);
+        return () => {
+            window.removeEventListener("mousemove", handleGlobalMouseMove, true);
+            document.removeEventListener("mouseleave", handleMouseLeaveWindow);
+        };
+    }, [mouseX, mouseY]);
+
+    const brightMask = useMotionTemplate`radial-gradient(circle 130px at ${smoothX}px ${smoothY}px, black 0%, transparent 100%)`;
+    const glowMask = useMotionTemplate`radial-gradient(circle 180px at ${smoothX}px ${smoothY}px, black 0%, transparent 100%)`;
+
+    const ecosystemLinks = [
+        { id: 'airdrop', label: '/airdrop', url: 'https://airdrop.nekowawolf.xyz' },
+        { id: 'crypto-community', label: '/crypto-community', url: 'https://cc.nekowawolf.xyz/' },
+        { id: 'web3-tools', label: '/web3-tools', url: 'https://web3.nekowawolf.xyz/' },
+        { id: 'ai-tools', label: '/ai-tools', url: 'https://ai.nekowawolf.xyz/' },
+        { id: 'github-repos', label: '/github-repos', url: 'https://github.nekowawolf.xyz/' },
+        { id: 'net', label: '/net', url: 'https://net.nekowawolf.xyz/' },
+        { id: 'creators', label: '/creators', url: 'https://creators.nekowawolf.xyz/' },
+        { id: 'guild', label: '/guild', url: 'https://guild.nekowawolf.xyz/' },
+    ];
+    
+    const currentProject = 'guild'; 
+    const filteredLinks = ecosystemLinks.filter(link => link.id !== currentProject);
+
+    return (
+        <footer className="relative py-10 mt-20 overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-t after:from-blue-600/30 after:via-blue-500/10 after:to-transparent after:pointer-events-none">
+            <div className="max-w-7xl mx-auto px-4 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 mt-8">
+                    {/* Left Section */}
+                    <div className="flex flex-col items-start space-y-6">
+                        <div className="flex items-center space-x-4">
+                            <img
+                                src="https://cdn.nekowawolf.xyz/image/2026/1787422451_logo.webp"
+                                alt="Logo"
+                                className="w-12 h-12 rounded-xl object-cover ring-2 ring-gray-500/20"
+                            />
+                            <span className="text-2xl font-extrabold text-fill-color">Nww</span>
+                        </div>
+                        <p className="text-fill-color/70 max-w-[280px] text-sm leading-relaxed">
+                            Exploring, building, and connecting the digital landscape.
+                        </p>
+                        <div className="flex flex-col space-y-6 mt-4">
+                            <div className="flex items-center space-x-4">
+                                <a href="https://x.com/nwwonee" target="_blank" rel="noopener noreferrer" className="cursor-pointer p-3 bg-[rgba(var(--fill-color-rgb),0.05)] hover:bg-[rgba(var(--fill-color-rgb),0.1)] border border-[var(--border-divider)] rounded-xl transition-all duration-300 text-fill-color hover:-translate-y-1 shadow-sm opacity-70 hover:opacity-100">
+                                    <FaXTwitter className="text-lg" />
+                                </a>
+                                <a href="https://instagram.com/nwwonee" target="_blank" rel="noopener noreferrer" className="cursor-pointer p-3 bg-[rgba(var(--fill-color-rgb),0.05)] hover:bg-[rgba(var(--fill-color-rgb),0.1)] border border-[var(--border-divider)] rounded-xl transition-all duration-300 text-fill-color hover:-translate-y-1 shadow-sm opacity-70 hover:opacity-100">
+                                    <FaInstagram className="text-lg" />
+                                </a>
+                                <a href="https://threads.net/@nwwonee" target="_blank" rel="noopener noreferrer" className="cursor-pointer p-3 bg-[rgba(var(--fill-color-rgb),0.05)] hover:bg-[rgba(var(--fill-color-rgb),0.1)] border border-[var(--border-divider)] rounded-xl transition-all duration-300 text-fill-color hover:-translate-y-1 shadow-sm opacity-70 hover:opacity-100">
+                                    <FaThreads className="text-lg" />
+                                </a>
+                            </div>
+                            <div className="text-sm text-fill-color/60">
+                                &copy; {new Date().getFullYear()} Nww Guild.
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Section */}
+                    <div className="flex flex-col md:items-end space-y-6">
+                        <div className="flex flex-col w-full md:w-auto md:min-w-[200px]">
+                            <h4 className="text-lg font-bold text-fill-color uppercase tracking-widest mb-6">/ECOSYSTEM</h4>
+                            <div className="flex flex-col space-y-4 items-start font-mono text-sm">
+                                {filteredLinks.map((link) => (
+                                    <a
+                                        key={link.id}
+                                        href={link.url}
+                                        target="_blank"
+                                        className="flex items-center group text-fill-color/60 hover:!text-blue-600 transition-colors duration-300"
+                                    >
+                                        <svg className="w-5 h-5 mr-3 text-fill-color/30 flex-shrink-0 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 2v14h14" />
+                                        </svg>
+                                        <span className="group-hover:translate-x-1 transition-transform duration-300">{link.label}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Separator line */}
+                <div className="w-full border-t border-gray-500/20 mt-12 mb-8"></div>
+            </div>
+
+            {/* Giant Text with flashlight effect */}
+            <div
+                ref={textContainerRef}
+                className="relative w-full flex justify-center cursor-default select-none overflow-hidden"
+            >
+                {/* Layer 1: Default text */}
+                <div className="flex justify-center items-center select-none pointer-events-none">
+                    <h3 className="text-[10vw] font-black text-fill-color opacity-10 tracking-tighter whitespace-nowrap">
+                        NWW GUILD
+                    </h3>
+                </div>
+
+                {/* Layer 2: Bright text with spotlight mask */}
+                <motion.div
+                    className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovering ? 1 : 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    style={{
+                        maskImage: brightMask,
+                        WebkitMaskImage: brightMask,
+                    }}
+                >
+                    <motion.h3 className="text-[10vw] font-black text-blue-600 tracking-tighter whitespace-nowrap">
+                        NWW GUILD
+                    </motion.h3>
+                </motion.div>
+
+                {/* Layer 3: Glow layer */}
+                <motion.div
+                    className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovering ? 0.6 : 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    style={{
+                        maskImage: glowMask,
+                        WebkitMaskImage: glowMask,
+                    }}
+                >
+                    <motion.h3 className="text-[10vw] font-black text-blue-500 tracking-tighter blur-[12px] whitespace-nowrap">
+                        NWW GUILD
+                    </motion.h3>
+                </motion.div>
+            </div>
+        </footer>
+    );
+}
