@@ -16,9 +16,23 @@ import { Guild } from '@/types/guild';
 
 const ITEMS_PER_PAGE = 6;
 
-const categories = ['Programming', 'Design', 'All', '3D', 'Artist', 'Editing', 'Photography', 'Audio', 'Gadget', 'Gaming', 'Other'];
+const categories = [
+    "Programming",
+    "Design",
+    "All",
+    "3D",
+    "AI",
+    "Crypto",
+    "Artist",
+    "Editing",
+    "Photography",
+    "Audio",
+    "Gadget",
+    "Gaming",
+    "Other"
+];
 
-const platformOptions = ['All', 'Discord', 'Telegram', 'WhatsApp', 'Facebook'];
+const platformOptions = ['All', 'Discord', 'Telegram', 'WhatsApp', 'Facebook' , 'Reddit'];
 
 const socialOrder = ['website', 'youtube', 'twitter', 'instagram', 'discord', 'github'];
 
