@@ -1,4 +1,4 @@
-import { Guild } from '@/types/guild';
+import { Guild, GuildSubmissionPayload } from '@/types/guild';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -65,4 +65,22 @@ export const fetchGuildById = async (id: string): Promise<Guild | null> => {
         console.error('Error fetching Guild item by ID:', error);
         return null;
     }
+};
+
+export const submitGuild = async (payload: GuildSubmissionPayload) => {
+    const fullUrl = `${API_BASE_URL}/guild-submissions`;
+    const response = await fetch(fullUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Failed to submit guild');
+    }
+
+    return response.json();
 };

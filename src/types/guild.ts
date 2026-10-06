@@ -1,3 +1,8 @@
+export interface AddedByInfo {
+    name: string;
+    url?: string;
+}
+
 export interface Guild {
     _id: string;
     name: string;
@@ -14,5 +19,13 @@ export interface Guild {
         github?: string;
         youtube?: string;
     };
+    added_by?: AddedByInfo;
     created_at?: string;
+}
+
+export interface GuildSubmissionPayload {
+    guild_link: string;
+    name: string;
+    link: string;
+    turnstile_token: string;
 }
