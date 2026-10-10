@@ -76,7 +76,7 @@ export default function AddGuildClient() {
     }, [guildLink, existingUrls]);
 
     const guildLinkError = guildLink.trim() && !isValidHttpUrl(guildLink.trim())
-        ? 'Link must be a valid URL starting with https://'
+        ? 'Community URL must be a valid URL starting with https://'
         : null;
 
     const handleGuildLinkChange = (value: string) => {
@@ -94,11 +94,11 @@ export default function AddGuildClient() {
         const trimmedLink = link.trim();
 
         if (!trimmedGuildLink) {
-            toast.error('Link is required.');
+            toast.error('Community URL is required.');
             return;
         }
         if (!isValidHttpUrl(trimmedGuildLink)) {
-            toast.error('Invalid Link URL format.');
+            toast.error('Invalid Community URL format.');
             return;
         }
         if (urlExists || existingUrls.includes(normalizeUrl(trimmedGuildLink))) {
@@ -158,7 +158,7 @@ export default function AddGuildClient() {
                     <div className="flex flex-col space-y-2">
                         <div className="flex items-center gap-2">
                             <label htmlFor="guild-link" className="text-sm font-semibold text-fill-color">
-                                Link <span className="text-red-500">*</span>
+                                Community URL <span className="text-red-500">*</span>
                             </label>
                             {isCheckingUrl && <Spinner className="w-3.5 h-3.5 text-blue-500" />}
                             {!isCheckingUrl && urlExists !== null && (
@@ -170,7 +170,7 @@ export default function AddGuildClient() {
                                     )}
                                     <button
                                         type="button"
-                                        aria-label="Show Link availability details"
+                                        aria-label="Show community URL availability details"
                                         onClick={() => setShowTooltip((visible) => !visible)}
                                         className="cursor-pointer text-fill-color/50 hover:text-fill-color transition-colors"
                                     >
