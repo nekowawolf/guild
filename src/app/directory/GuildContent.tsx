@@ -353,7 +353,7 @@ function GuildContentInner() {
                                                 <div className="flex flex-wrap gap-1.5 mb-3">
                                                     {guild.category && (
                                                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
-                                                            {guild.category}
+                                                            <span className="relative top-px">{guild.category}</span>
                                                         </span>
                                                     )}
                                                 </div>
@@ -368,7 +368,7 @@ function GuildContentInner() {
                                                         {orderedSocials.slice(0, 4).map(social => renderSocialIcon(social.key, social.url))}
                                                         {orderedSocials.length > 4 && (
                                                             <span className="text-[10px] px-2 py-0.5 rounded-md border border-color bg-card-color text-fill-color/70 font-bold shrink-0">
-                                                                +{orderedSocials.length - 4}
+                                                                <span className="relative top-px">+{orderedSocials.length - 4}</span>
                                                             </span>
                                                         )}
                                                     </div>
@@ -464,7 +464,7 @@ function GuildContentInner() {
                                         <div className="flex gap-2 items-center flex-wrap">
                                             {selectedGuild.category && (
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                                    {selectedGuild.category}
+                                                    <span className="relative top-px">{selectedGuild.category}</span>
                                                 </span>
                                             )}
                                         </div>
