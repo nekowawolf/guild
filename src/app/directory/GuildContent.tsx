@@ -2,7 +2,7 @@
 
 import NwwOneeAIChat, { chatStore } from "@/components/NwwOneeAIChat";
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { FaTimes, FaYoutube, FaInstagram, FaGithub, FaDiscord, FaTelegram, FaGlobe } from 'react-icons/fa';
+import { FaTimes, FaYoutube, FaInstagram, FaTiktok, FaGithub, FaDiscord, FaTelegram, FaGlobe } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { CgClose } from "react-icons/cg";
 import { GoSearch } from "react-icons/go";
@@ -34,7 +34,7 @@ const categories = [
 
 const platformOptions = ['All', 'Discord', 'Telegram', 'WhatsApp', 'Facebook' , 'Reddit'];
 
-const socialOrder = ['website', 'youtube', 'twitter', 'instagram', 'discord', 'github'];
+const socialOrder = ['website', 'youtube', 'twitter', 'instagram', 'tiktok', 'discord', 'github'];
 
 function FilterDropdown({ selectedPlatform, setSelectedPlatform }: { selectedPlatform: string, setSelectedPlatform: (p: string) => void }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -131,6 +131,7 @@ function GuildContentInner() {
             case 'youtube': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaYoutube className="w-5 h-5" /></a>;
             case 'twitter': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaXTwitter className="w-5 h-5" /></a>;
             case 'instagram': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaInstagram className="w-5 h-5" /></a>;
+            case 'tiktok': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaTiktok className="w-5 h-5" /></a>;
             case 'github': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaGithub className="w-5 h-5" /></a>;
             case 'discord': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaDiscord className="w-5 h-5" /></a>;
             case 'telegram': return <a key={key} href={url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="opacity-70 hover:opacity-100 transition-opacity text-fill-color"><FaTelegram className="w-5 h-5" /></a>;

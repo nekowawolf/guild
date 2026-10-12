@@ -15,6 +15,7 @@ export interface Guild {
     socials: {
         twitter?: string;
         instagram?: string;
+        tiktok?: string;
         discord?: string;
         github?: string;
         youtube?: string;
