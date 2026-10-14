@@ -1,71 +1,102 @@
 'use client';
 
+import { cn } from "@/lib/utils";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+
 interface Pagination2Props {
-    currentPage: number;
-    itemsPerPage: number;
-    totalItems: number;
-    onPageChange: (page: number) => void;
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
 }
 
 export default function Pagination2({
-    currentPage,
-    itemsPerPage,
-    totalItems,
-    onPageChange,
+  currentPage,
+  itemsPerPage,
+  totalItems,
+  onPageChange,
 }: Pagination2Props) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    if (totalPages <= 1) return null;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    const paginationRange: (number | '...')[] = [];
-    let previousPage: number | undefined;
+  if (totalPages <= 1) return null;
 
-    for (let page = 1; page <= totalPages; page += 1) {
-        if (page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1) {
-            if (previousPage !== undefined && page - previousPage > 1) {
-                paginationRange.push('...');
-            }
-            paginationRange.push(page);
-            previousPage = page;
+  const getPaginationRange = (): (number | '...')[] => {
+    const delta = 1;
+    const range: (number | '...')[] = [];
+    const left = currentPage - delta;
+    const right = currentPage + delta;
+
+    let prev: number | undefined;
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+        if (prev !== undefined && i - prev > 1) {
+          range.push('...');
         }
+        range.push(i);
+        prev = i;
+      }
     }
+    return range;
+  };
 
-    return (
-        <nav aria-label="Pagination" className="flex flex-wrap justify-center items-center gap-1 mt-4">
-            <button
-                type="button"
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="cursor-pointer rounded-md px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm text-fill-color/60 hover:bg-[rgba(var(--fill-color-rgb),0.1)] hover:text-fill-color disabled:pointer-events-none disabled:opacity-50"
-            >
-                Previous
-            </button>
+  return (
+    <Pagination className="flex justify-center mt-4">
+      <PaginationContent className="flex flex-wrap justify-center gap-1">
+        <PaginationItem>
+          <PaginationPrevious
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            className={cn(
+              "cursor-pointer",
+              "px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm",
+              currentPage === 1 && "pointer-events-none opacity-50"
+            )}
+          />
+        </PaginationItem>
 
-            {paginationRange.map((page, index) => page === '...' ? (
-                <span key={`ellipsis-${index}`} className="px-2 py-1 text-fill-color/60">…</span>
+        {getPaginationRange().map((page, index) => (
+          <PaginationItem key={index}>
+            {page === '...' ? (
+              <PaginationEllipsis className="text-xs sm:text-base" />
             ) : (
-                <button
-                    type="button"
-                    key={page}
-                    aria-current={currentPage === page ? 'page' : undefined}
-                    onClick={() => onPageChange(page)}
-                    className={`cursor-pointer rounded-md px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm ${
-                        currentPage === page
-                            ? 'text-blue-400 bg-blue-500/20 border border-blue-500/40 shadow-sm'
-                            : 'text-fill-color/60 border border-transparent hover:bg-[rgba(var(--fill-color-rgb),0.1)] hover:text-fill-color'
-                    }`}
-                >
-                    {page}
-                </button>
-            ))}
+              <PaginationLink
+                aria-label={`Go to page ${page}`}
+                isActive={currentPage === page}
+                onClick={() => onPageChange(Number(page))}
+                className={cn(
+                  "cursor-pointer",
+                  "px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm transition-none",
+                  currentPage === page
+                    ? "text-blue-400 bg-blue-500/20 border-blue-500/40 shadow-sm hover:bg-blue-500/30 hover:text-blue-400"
+                    : "text-fill-color/60 hover:bg-[rgba(var(--fill-color-rgb),0.1)] hover:text-fill-color"
+                )}
+              >
+                {page}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
 
-            <button
-                type="button"
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="cursor-pointer rounded-md px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm text-fill-color/60 hover:bg-[rgba(var(--fill-color-rgb),0.1)] hover:text-fill-color disabled:pointer-events-none disabled:opacity-50"
-            >
-                Next
-            </button>
-        </nav>
-    );
+        <PaginationItem>
+          <PaginationNext
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className={cn(
+              "cursor-pointer",
+              "px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm",
+              currentPage === totalPages && "pointer-events-none opacity-50"
+            )}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
 }

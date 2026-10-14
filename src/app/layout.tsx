@@ -6,6 +6,7 @@ import "../styles/globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://guild.nekowawolf.xyz"),
   title: "Nww Guild",
   description: "Discover communities across various niches and platforms.",
   icons: {
