@@ -2,6 +2,7 @@
 
 import NwwOneeAIChat, { chatStore } from "@/components/NwwOneeAIChat";
 import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FaTimes, FaYoutube, FaInstagram, FaTiktok, FaGithub, FaDiscord, FaTelegram, FaGlobe } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { CgClose } from "react-icons/cg";
@@ -105,8 +106,12 @@ function FilterDropdown({ selectedPlatform, setSelectedPlatform }: { selectedPla
 }
 
 function GuildContentInner() {
+    const searchParams = useSearchParams();
+    const targetId = searchParams.get('id');
+
     const { 
         displayedGuilds, 
+        allGuilds,
         loading, 
         error, 
         localSearchQuery, 
@@ -125,6 +130,26 @@ function GuildContentInner() {
     } = useGuilds(ITEMS_PER_PAGE);
 
     const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null);
+
+    useEffect(() => {
+        if (targetId && allGuilds && allGuilds.length > 0) {
+            const found = allGuilds.find(g => g._id === targetId);
+            if (found) {
+                setSelectedGuild(found);
+            }
+        }
+    }, [targetId, allGuilds]);
+
+    const handleCloseModal = () => {
+        setSelectedGuild(null);
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            if (url.searchParams.has('id')) {
+                url.searchParams.delete('id');
+                window.history.replaceState(null, '', url.pathname + (url.search ? url.search : ''));
+            }
+        }
+    };
 
     const renderSocialIcon = (key: string, url: string) => {
         switch (key) {
@@ -418,7 +443,7 @@ function GuildContentInner() {
                 {selectedGuild && (
                     <div
                         className="cursor-pointer fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-                        onClick={() => setSelectedGuild(null)}
+                        onClick={handleCloseModal}
                     >
                         <div
                             className="cursor-auto glass-card rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-color shadow-2xl relative"
@@ -441,7 +466,7 @@ function GuildContentInner() {
                                 </button>
                                 {/* Close */}
                                 <button
-                                    onClick={() => setSelectedGuild(null)}
+                                    onClick={handleCloseModal}
                                     className="w-9 h-9 flex items-center justify-center rounded-full bg-[rgba(var(--fill-color-rgb),0.06)] border border-color text-fill-color opacity-70 hover:opacity-100 transition-all cursor-pointer"
                                 >
                                     <FaTimes size={14} />

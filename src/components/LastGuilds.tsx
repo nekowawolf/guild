@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FaUsers } from 'react-icons/fa';
 import { FallbackImage } from '@/components/FallbackImage';
 import Pagination2 from '@/components/Pagination2';
@@ -12,10 +13,17 @@ import { Guild } from '@/types/guild';
 const ITEMS_PER_PAGE = 5;
 
 export default function LastGuilds() {
+    const router = useRouter();
     const [activities, setActivities] = useState<Guild[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const handleGuildClick = (guild: Guild) => {
+        const searchParam = encodeURIComponent(guild.name || '');
+        const idParam = guild._id ? `&id=${encodeURIComponent(guild._id)}` : '';
+        router.push(`/directory?q=${searchParam}${idParam}`);
+    };
 
     useEffect(() => {
         async function loadData() {
@@ -78,9 +86,21 @@ export default function LastGuilds() {
                             {displayedActivities.map((guild) => (
                                     <div
                                         key={guild._id}
-                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 relative w-full"
+                                        onClick={() => {
+                                            if (typeof window !== 'undefined' && window.innerWidth >= 640) {
+                                                handleGuildClick(guild);
+                                            }
+                                        }}
+                                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 relative transition-transform duration-300 sm:hover:translate-x-2 sm:cursor-pointer cursor-default w-full"
                                     >
-                                        <div className="flex items-center gap-3 shrink-0 w-fit min-w-0">
+                                        <div
+                                            onClick={() => {
+                                                if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                                                    handleGuildClick(guild);
+                                                }
+                                            }}
+                                            className="flex items-center gap-3 shrink-0 cursor-pointer w-fit min-w-0"
+                                        >
                                             {guild.image_url ? (
                                                 <FallbackImage
                                                     src={guild.image_url}
@@ -92,12 +112,12 @@ export default function LastGuilds() {
                                                     <FaUsers className="w-4 h-4" />
                                                 </div>
                                             )}
-                                            <span className="text-lg sm:text-xl font-bold text-fill-color tracking-tight truncate max-w-[200px] sm:max-w-[300px]">
+                                            <span className="text-lg sm:text-xl font-bold text-fill-color group-hover:text-blue-500 transition-colors duration-300 tracking-tight truncate max-w-[200px] sm:max-w-[300px]">
                                                 {guild.name}
                                             </span>
                                         </div>
 
-                                        <span className="hidden sm:block flex-1 h-px bg-[var(--border-divider)] mx-4" />
+                                        <span className="hidden sm:block flex-1 h-px bg-[var(--border-divider)] group-hover:bg-blue-500/30 transition-colors duration-300 mx-4" />
 
                                         <div className="flex items-center justify-start sm:justify-end shrink-0 min-w-0 mt-1 sm:mt-0">
                                             {guild.added_by?.name && (
@@ -119,15 +139,32 @@ export default function LastGuilds() {
                                                 </div>
                                             )}
 
-                                            {guild.created_at && (
-                                                <span className="text-xs text-fill-color/60 font-mono whitespace-nowrap">
-                                                    {new Date(guild.created_at).toLocaleDateString(undefined, {
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                    })}
-                                                </span>
-                                            )}
+                                            {/* Rolling Section */}
+                                            <div
+                                                onClick={() => {
+                                                    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                                                        handleGuildClick(guild);
+                                                    }
+                                                }}
+                                                className="relative flex items-center shrink-0 h-6 overflow-hidden w-[105px] cursor-pointer"
+                                            >
+                                                <div className="absolute inset-y-0 left-0 flex items-center text-xs text-fill-color/60 font-mono transition-all duration-300 group-hover:opacity-0 group-hover:-translate-y-full">
+                                                    {guild.created_at && (
+                                                        <span>
+                                                            {new Date(guild.created_at).toLocaleDateString(undefined, {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                            })}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Hover View */}
+                                                <div className="absolute inset-y-0 left-0 flex items-center text-xs text-blue-500 font-mono transition-all duration-300 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 whitespace-nowrap">
+                                                    <span>View Details →</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                             ))}

@@ -15,7 +15,7 @@ export const useGuilds = (itemsPerPage: number = 6) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     
-    const [localSearchQuery, setLocalSearchQuery] = useState(searchParams.get('q') || '');
+    const [localSearchQuery, setLocalSearchQuery] = useState(searchParams.get('q') || searchParams.get('search') || '');
     const [localCategory, setLocalCategory] = useState(searchParams.get('category') || 'All');
     const [localPlatform, setLocalPlatform] = useState(searchParams.get('platform') || 'All');
     const [localPage, setLocalPage] = useState(Number(searchParams.get('page')) || 1);
@@ -133,17 +133,30 @@ export const useGuilds = (itemsPerPage: number = 6) => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const targetId = searchParams.get('id');
+
     const filteredGuilds = useMemo(() => {
-        return guildsData.filter(guild => {
-            const matchesSearch = guild.name.toLowerCase().includes(localSearchQuery.toLowerCase());
-            const matchesCategory = localCategory === 'All' || guild.category === localCategory;
-            const matchesPlatform = localPlatform === 'All' || guild.platform === localPlatform;
+        const filtered = guildsData.filter(guild => {
+            const matchesId = targetId ? guild._id === targetId : false;
+            const matchesSearch = matchesId || guild.name.toLowerCase().includes(localSearchQuery.toLowerCase());
+            const matchesCategory = matchesId || localCategory === 'All' || guild.category === localCategory;
+            const matchesPlatform = matchesId || localPlatform === 'All' || guild.platform === localPlatform;
             return matchesSearch && matchesCategory && matchesPlatform;
         });
-    }, [guildsData, localSearchQuery, localCategory, localPlatform]);
+
+        if (targetId) {
+            const targetIdx = filtered.findIndex(guild => guild._id === targetId);
+            if (targetIdx > 0) {
+                const [targetItem] = filtered.splice(targetIdx, 1);
+                filtered.unshift(targetItem);
+            }
+        }
+
+        return filtered;
+    }, [guildsData, localSearchQuery, localCategory, localPlatform, targetId]);
 
     useEffect(() => {
-        const currentQ = searchParams.get('q') || '';
+        const currentQ = searchParams.get('q') || searchParams.get('search') || '';
         const currentCat = searchParams.get('category') || 'All';
         const currentPlat = searchParams.get('platform') || 'All';
         const currentPg = Number(searchParams.get('page')) || 1;
@@ -152,7 +165,7 @@ export const useGuilds = (itemsPerPage: number = 6) => {
         setLocalCategory(currentCat);
         setLocalPlatform(currentPlat);
         setLocalPage(currentPg);
-    }, [searchParams.get('q'), searchParams.get('category'), searchParams.get('platform'), searchParams.get('page')]);
+    }, [searchParams.get('q'), searchParams.get('search'), searchParams.get('category'), searchParams.get('platform'), searchParams.get('page')]);
 
     const totalItems = filteredGuilds.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
@@ -175,6 +188,7 @@ export const useGuilds = (itemsPerPage: number = 6) => {
 
     return {
         displayedGuilds,
+        allGuilds: filteredGuilds,
         loading,
         error,
         localSearchQuery,
